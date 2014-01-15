@@ -13,6 +13,7 @@
 
 #import "SVProgressHUD.h"
 #import <QuartzCore/QuartzCore.h>
+#import "MRActivityIndicatorView.h"
 
 NSString * const SVProgressHUDDidReceiveTouchEventNotification = @"SVProgressHUDDidReceiveTouchEventNotification";
 NSString * const SVProgressHUDWillDisappearNotification = @"SVProgressHUDWillDisappearNotification";
@@ -40,7 +41,7 @@ CGFloat SVProgressHUDRingThickness = 6;
 @property (nonatomic, strong, readonly) UIView *hudView;
 @property (nonatomic, strong, readonly) UILabel *stringLabel;
 @property (nonatomic, strong, readonly) UIImageView *imageView;
-@property (nonatomic, strong, readonly) UIActivityIndicatorView *spinnerView;
+@property (nonatomic, strong, readonly) MRActivityIndicatorView *spinnerView;
 
 @property (nonatomic, readwrite) CGFloat progress;
 @property (nonatomic, readwrite) NSUInteger activityCount;
@@ -202,6 +203,12 @@ CGFloat SVProgressHUDRingThickness = 6;
             
         case SVProgressHUDMaskTypeBlack: {
             [[UIColor colorWithWhite:0 alpha:0.5] set];
+            CGContextFillRect(context, self.bounds);
+            break;
+        }
+            
+        case SVProgressHUDMaskTypeWhite: {
+            [[UIColor colorWithWhite:1 alpha:0.5] set];
             CGContextFillRect(context, self.bounds);
             break;
         }
@@ -791,14 +798,11 @@ CGFloat SVProgressHUDRingThickness = 6;
     return imageView;
 }
 
-- (UIActivityIndicatorView *)spinnerView {
+- (MRActivityIndicatorView *)spinnerView {
     if (spinnerView == nil) {
-        spinnerView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        spinnerView = [[MRActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30.f, 30.f)];
 		spinnerView.hidesWhenStopped = YES;
-		spinnerView.bounds = CGRectMake(0, 0, 37, 37);
-        
-        if([spinnerView respondsToSelector:@selector(setColor:)]) // setColor is iOS 5+
-            spinnerView.color = self.hudForegroundColor;
+        spinnerView.lineWidth = 1.f;
     }
     
     if(!spinnerView.superview)
