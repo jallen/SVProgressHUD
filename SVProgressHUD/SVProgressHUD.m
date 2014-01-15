@@ -24,11 +24,12 @@ NSString * const SVProgressHUDDidAppearNotification = @"SVProgressHUDDidAppearNo
 NSString * const SVProgressHUDStatusUserInfoKey = @"SVProgressHUDStatusUserInfoKey";
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
-CGFloat SVProgressHUDRingRadius = 14;
-CGFloat SVProgressHUDRingThickness = 1;
+static const CGFloat SVProgressHUDRingRadius = 14;
+static const CGFloat SVProgressHUDRingThickness = 1;
+static const CGFloat SVProgressHUDParallaxDepthPoints = 10;
 #else
-CGFloat SVProgressHUDRingRadius = 14;
-CGFloat SVProgressHUDRingThickness = 6;
+static const CGFloat SVProgressHUDRingRadius = 14;
+static const CGFloat SVProgressHUDRingThickness = 6;
 #endif
 
 @interface SVProgressHUD ()
@@ -424,12 +425,11 @@ CGFloat SVProgressHUDRingThickness = 6;
     } 
     
     if(notification) {
-        SVProgressHUD *__weak weakSelf=self;
-        [UIView animateWithDuration:animationDuration 
+        [UIView animateWithDuration:animationDuration
                               delay:0 
                             options:UIViewAnimationOptionAllowUserInteraction 
                          animations:^{
-                             [weakSelf moveToPoint:newCenter rotateAngle:rotateAngle];
+                             [self moveToPoint:newCenter rotateAngle:rotateAngle];
                          } completion:NULL];
     } 
     
@@ -661,39 +661,12 @@ CGFloat SVProgressHUDRingThickness = 6;
     [CATransaction commit];
 }
 
-- (CGPoint)pointOnCircleWithCenter:(CGPoint)center radius:(double)radius angleInDegrees:(double)angleInDegrees {
-    float x = (float)(radius * cos(angleInDegrees * M_PI / 180)) + radius;
-    float y = (float)(radius * sin(angleInDegrees * M_PI / 180)) + radius;
-    return CGPointMake(x, y);
-}
-
-
-- (UIBezierPath *)createCirclePathWithCenter:(CGPoint)center radius:(CGFloat)radius sampleCount:(NSInteger)sampleCount {
-    
-    UIBezierPath *smoothedPath = [UIBezierPath bezierPath];
-    CGPoint startPoint = [self pointOnCircleWithCenter:center radius:radius angleInDegrees:-90];
-    
-    [smoothedPath moveToPoint:startPoint];
-    
-    CGFloat delta = 360.0f/sampleCount;
-    CGFloat angleInDegrees = -90;
-    for (NSInteger i=1; i<sampleCount; i++) {
-        angleInDegrees += delta;
-        CGPoint point = [self pointOnCircleWithCenter:center radius:radius angleInDegrees:angleInDegrees];
-        [smoothedPath addLineToPoint:point];
-    }
-    
-    [smoothedPath addLineToPoint:startPoint];
-    
-    return smoothedPath;
-}
-
-
 - (CAShapeLayer *)createRingLayerWithCenter:(CGPoint)center radius:(CGFloat)radius lineWidth:(CGFloat)lineWidth color:(UIColor *)color {
     
-    UIBezierPath *smoothedPath = [self createCirclePathWithCenter:center radius:radius sampleCount:72];
+    UIBezierPath* smoothedPath = [UIBezierPath bezierPathWithArcCenter:CGPointMake(radius, radius) radius:radius startAngle:-M_PI_2 endAngle:(M_PI + M_PI_2) clockwise:YES];
     
     CAShapeLayer *slice = [CAShapeLayer layer];
+    slice.contentsScale = [[UIScreen mainScreen] scale];
     slice.frame = CGRectMake(center.x-radius, center.y-radius, radius*2, radius*2);
     slice.fillColor = [UIColor clearColor].CGColor;
     slice.strokeColor = color.CGColor;
@@ -752,6 +725,24 @@ CGFloat SVProgressHUDRingThickness = 6;
         
         hudView.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleTopMargin |
                                     UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleLeftMargin);
+        
+        //
+        // add motion effect
+        //
+#if __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000
+        {
+            UIInterpolatingMotionEffect *effectX = [[UIInterpolatingMotionEffect alloc] initWithKeyPath: @"center.x" type: UIInterpolatingMotionEffectTypeTiltAlongHorizontalAxis];
+            effectX.minimumRelativeValue = @(-SVProgressHUDParallaxDepthPoints);
+            effectX.maximumRelativeValue = @(SVProgressHUDParallaxDepthPoints);
+            
+            UIInterpolatingMotionEffect *effectY = [[UIInterpolatingMotionEffect alloc] initWithKeyPath: @"center.y" type: UIInterpolatingMotionEffectTypeTiltAlongVerticalAxis];
+            effectY.minimumRelativeValue = @(-SVProgressHUDParallaxDepthPoints);
+            effectY.maximumRelativeValue = @(SVProgressHUDParallaxDepthPoints);
+            
+            [hudView addMotionEffect: effectX];
+            [hudView addMotionEffect: effectY];
+        }
+#endif
         
         [self addSubview:hudView];
     }
