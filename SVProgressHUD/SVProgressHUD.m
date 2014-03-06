@@ -792,7 +792,7 @@ static const CGFloat SVProgressHUDRingThickness = 6;
 - (MRActivityIndicatorView *)spinnerView {
     if (spinnerView == nil) {
         spinnerView = [[MRActivityIndicatorView alloc] initWithFrame:CGRectMake(0, 0, 30.f, 30.f)];
-		spinnerView.hidesWhenStopped = YES;
+		spinnerView.hidden = YES;
         spinnerView.lineWidth = 1.f;
     }
     
