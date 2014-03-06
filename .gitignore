@@ -9,6 +9,7 @@
 *.mode2v3
 *.perspectivev3
 *.xcuserstate
+*.xcworkspace
 project.xcworkspace/
 xcuserdata/
 DerivedData/
@@ -21,3 +22,6 @@ build/
 # Backup files
 *~.nib
 / graphics/
+
+# CocoaPods
+Pods

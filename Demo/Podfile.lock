@@ -1,0 +1,48 @@
+PODS:
+  - MRProgress (0.4.1):
+    - MRProgress/ActivityIndicator
+    - MRProgress/Blur
+    - MRProgress/Circular
+    - MRProgress/Helper
+    - MRProgress/Icons
+    - MRProgress/MessageInterceptor
+    - MRProgress/NavigationBarProgress
+    - MRProgress/Overlay
+    - MRProgress/Stopable
+    - MRProgress/WeakProxy
+  - MRProgress/ActivityIndicator (0.4.1):
+    - MRProgress/Stopable
+  - MRProgress/Blur (0.4.1):
+    - MRProgress/Helper
+  - MRProgress/Circular (0.4.1):
+    - MRProgress/Helper
+    - MRProgress/Stopable
+  - MRProgress/Helper (0.4.1)
+  - MRProgress/Icons (0.4.1)
+  - MRProgress/MessageInterceptor (0.4.1)
+  - MRProgress/NavigationBarProgress (0.4.1):
+    - MRProgress/MessageInterceptor
+  - MRProgress/Overlay (0.4.1):
+    - MRProgress/ActivityIndicator
+    - MRProgress/Blur
+    - MRProgress/Circular
+    - MRProgress/Helper
+    - MRProgress/Icons
+  - MRProgress/Stopable (0.4.1):
+    - MRProgress/Helper
+  - MRProgress/WeakProxy (0.4.1)
+  - SVProgressHUD (1.0)
+
+DEPENDENCIES:
+  - MRProgress
+  - SVProgressHUD (from `../SVProgressHUD.podspec`)
+
+EXTERNAL SOURCES:
+  SVProgressHUD:
+    :path: ../SVProgressHUD.podspec
+
+SPEC CHECKSUMS:
+  MRProgress: 6530ce71278dd7ecfb5e3c3e37df03a323690936
+  SVProgressHUD: 5e10939a296debf5fe5a5895eda9539b8b2114f1
+
+COCOAPODS: 0.29.0
